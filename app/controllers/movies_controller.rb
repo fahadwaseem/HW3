@@ -2,14 +2,23 @@
 class MoviesController < ApplicationController
 
   def index
-    sort = params[:sort_by]
+    sort = params[:sort_by] || "null"
 	@all_ratings = Movie.all_ratings	
+	@selected_rating = params[:ratings] || {}
 	case sort
 	when "title"
-		@movies = Movie.find(:all,:order=>sort)
-		return @movies    
+		@movies = Movie.find(:all,:order=>"title")
+		return @movies
+	when "date"
+		@movies = Movie.find(:all,:order=>"release_date")
+		return @movies
 	end
-    @movies = Movie.all
+	if @selected_rating == {}
+    	@movies = Movie.all
+		return @movies
+	end
+	@movies = Movie.find_all_by_rating(@selected_rating.keys)
+	
   end
 
   def show
